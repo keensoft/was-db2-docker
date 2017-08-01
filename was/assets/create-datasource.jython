@@ -1,0 +1,41 @@
+node = AdminConfig.getid('/Cell:DefaultCell01/Node:DefaultNode01/')
+print node
+
+#JDBC Provider
+n1 = ['name', 'DockerJDBC']
+implCN = ['implementationClassName', 'com.ibm.db2.jcc.DB2ConnectionPoolDataSource']
+cls = ['classpath', '/db2/db2jcc.jar;/db2/db2jcc_license_cu.jar']
+provider = ['providerType', 'DB2 Universal JDBC Driver Provider']
+jdbcAttrs = [n1,  implCN, cls, provider]
+AdminConfig.create('JDBCProvider', node, jdbcAttrs)
+
+#JASS Auth
+userAlias='docker/db2'
+alias = ['alias', userAlias]
+userid = ['userId', 'db2inst1']
+password = ['password', 'keensoft']
+jaasAttrs = [alias, userid, password]
+security = AdminConfig.getid('/Security:/')
+j2cUser=AdminConfig.create('JAASAuthData', security, jaasAttrs)
+print j2cUser
+
+#DS
+newjdbc = AdminConfig.getid('/Cell:DefaultCell01/Node:DefaultNode01/JDBCProvider:DockerJDBC/')
+name = ['name', 'DockerDS']
+jndi = ['jndiName', 'jdbc/docker']
+auth = ['authDataAlias' , userAlias]
+helper = ['datasourceHelperClassname', 'com.ibm.websphere.rsadapter.DB2UniversalDataStoreHelper']
+dsAttrs = [name, jndi, auth, helper]
+newds = AdminConfig.create('DataSource', newjdbc, dsAttrs)
+print newds
+
+#DS properties
+propSet = AdminConfig.create('J2EEResourcePropertySet', newds, [])
+AdminConfig.create('J2EEResourceProperty', propSet, [["name", "driverType"], ["value", "4"]])
+AdminConfig.create('J2EEResourceProperty', propSet, [["name", "databaseName"], ["value", "DOCKER"]])
+AdminConfig.create('J2EEResourceProperty', propSet, [["name", "serverName"], ["value", "db2"]])
+AdminConfig.create('J2EEResourceProperty', propSet, [["name", "portNumber"], ["value", "50000"]])
+AdminConfig.create('J2EEResourceProperty', propSet, [["name", "currentSchema"], ["value", "DOCKER"]])
+
+
+AdminConfig.save()

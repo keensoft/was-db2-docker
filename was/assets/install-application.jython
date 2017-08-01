@@ -1,0 +1,5 @@
+AdminApp.install('/war/application.war', '[ -nopreCompileJSPs -distributeApp -nouseMetaDataFromBinary -nodeployejb -appname application_war -createMBeansForResources -noreloadEnabled -nodeployws -validateinstall warn -noprocessEmbeddedConfig -filepermission .*\.dll=755#.*\.so=755#.*\.a=755#.*\.sl=755 -noallowDispatchRemoteInclude -noallowServiceRemoteInclude -asyncRequestDispatchType DISABLED -nouseAutoLink -noenableClientModule -clientMode isolated -novalidateSchema -contextroot /docker -MapModulesToServers [[ application.war application.war,WEB-INF/web.xml WebSphere:cell=DefaultCell01,node=DefaultNode01,server=server1 ]] -MapWebModToVH [[ application.war application.war,WEB-INF/web.xml default_host ]] -MetadataCompleteForModules [[ application.war application.war,WEB-INF/web.xml true ]] -CtxRootForWebMod [[ application.war application.war,WEB-INF/web.xml /docker ]]]' )
+
+AdminConfig.save()
+
+AdminControl.invoke('WebSphere:name=ApplicationManager,process=server1,platform=proxy,node=DefaultNode01,version=9.0.0.4,type=ApplicationManager,mbeanIdentifier=ApplicationManager,cell=DefaultCell01,spec=1.0', 'startApplication', '[application_war]')

@@ -1,0 +1,8 @@
+FROM ibmcom/db2express-c:10.5.0.5-3.10.0
+
+RUN set -x && yum install java -y && yum clean all
+	
+COPY assets/createdb.sh /scripts/createdb.sh
+RUN su - db2inst1 -c /scripts/createdb.sh
+	
+CMD	["db2start"]

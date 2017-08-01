@@ -1,0 +1,25 @@
+version: "3"
+services:
+  db2:
+    build:
+      context: "./db2"
+    ports:
+      - "50000:50000"              
+    environment:
+      - DB2INST1_PASSWORD=keensoft
+      - LICENSE=accept
+    volumes:
+      - db2-driver:/home/db2inst1/sqllib/java
+  was:
+    build:
+      context: "./was"
+    ports:
+      - "9043:9043"
+      - "9443:9443"
+      - "9080:9080"    
+    depends_on:
+      - db2
+    volumes:
+      - db2-driver:/db2
+volumes:
+  db2-driver: 

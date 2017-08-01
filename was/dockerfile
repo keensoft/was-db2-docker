@@ -1,0 +1,15 @@
+FROM ibmcom/websphere-traditional:9.0.0.4-profile
+
+COPY assets/PASSWORD /tmp/PASSWORD
+COPY assets/create-datasource.jython /scripts/create-datasource.jython
+COPY assets/start-server.sh /scripts/start-server.sh
+
+RUN set -x && ./scripts/start-server.sh && /opt/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh -lang jython -user wsadmin -password keensoft -f /scripts/create-datasource.jython
+
+COPY war /war
+COPY assets/install-application.jython /scripts/install-application.jython
+COPY assets/install-application.sh /scripts/install-application.sh
+RUN set -x && ./scripts/install-application.sh
+
+CMD	["/work/start_server"]
+ 
